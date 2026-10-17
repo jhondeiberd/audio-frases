@@ -53,7 +53,7 @@ async function parsePage(page) {
     });
     rows.push({ n: +nm.s, t: [cols[0] ? cols[0].s : '', cols[1] ? cols[1].s : ''], hl: hl.some(Boolean), x0: [cols[0] ? cols[0].x0 : null, cols[1] ? cols[1].x0 : null] });
   });
-  // encabezado de la tabla (por ejemplo «INGLES | ESPAÑOL»): da el nombre de cada idioma
+  // table header (for example "ENGLISH | SPANISH"): gives the name of each language
   const med = k => { const v = rows.map(r => r.x0[k]).filter(v => v != null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : null; };
   const hy = nums[0].y + sp / 2, hdrItems = items.filter(i => i.y > hy && i.y < hy + sp * 1.6 && !/^\d+$/.test(i.s));
   const pick = k => { const x = med(k); if (x == null) return null; const c = hdrItems.filter(i => Math.abs(i.x - x) < 20).sort((a, b) => Math.abs(a.x - x) - Math.abs(b.x - x))[0]; return c ? headName(c.s) : null; };

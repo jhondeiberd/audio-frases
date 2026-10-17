@@ -1,6 +1,6 @@
-/* Motor de audio: segmentación por silencios, clasificación de voz por tono, emparejado, ensamblado, ZIP */
+/* Audio engine: segmentation by silences, voice classification by pitch, pairing, assembly, ZIP */
 const Core = (() => {
-  // ---------- análisis ----------
+  // ---------- analysis ----------
   function frameDb(x, sr, hop) {
     const n = Math.floor(sr * hop), out = new Float32Array(Math.floor(x.length / n));
     for (let f = 0; f < out.length; f++) {
@@ -11,7 +11,7 @@ const Core = (() => {
     return out;
   }
 
-  // Trozos de habla separados por silencios >= minSil (s). Descarta trozos < minLen.
+  // Speech pieces separated by silences >= minSil (s). Pieces shorter than minLen are discarded.
   function pieces(x, sr, { thr = -35, minSil = 0.25, minLen = 0.12, hop = 0.01 } = {}) {
     const db = frameDb(x, sr, hop), gapF = Math.round(minSil / hop);
     const runs = []; let start = -1, last = -1;
@@ -25,7 +25,7 @@ const Core = (() => {
 
   function median(a) { const s = a.slice().sort((p, q) => p - q); return s.length ? s[s.length >> 1] : 0; }
 
-  // Tono (Hz) mediano de un trozo por autocorrelación en tramos con voz
+  // Median pitch (Hz) of a piece, by autocorrelation over the voiced stretches
   function pitch(x, sr, a, b) {
     const W = Math.round(sr * 0.04), H = Math.round(sr * 0.02);
     const lagMin = Math.floor(sr / 330), lagMax = Math.ceil(sr / 75);
@@ -46,7 +46,7 @@ const Core = (() => {
     return { f0: f0.length ? median(f0) : 0, voiced: f0.length };
   }
 
-  // 2-means en 1D. Devuelve null si las dos voces no se separan claramente.
+  // 1-D 2-means. Returns null when the two voices do not separate clearly.
   function twoVoices(vals) {
     const v = vals.filter(t => t > 0).sort((p, q) => p - q);
     if (v.length < 6) return null;
@@ -63,12 +63,12 @@ const Core = (() => {
     return { lo, hi, mid, sep };
   }
 
-  // Asigna una voz (0 grave, 1 aguda) a cada trozo con Viterbi: el tono de cada trozo da la evidencia
-  // (robusta a valores raros) y el silencio previo dice si es probable un cambio de enunciado.
-  // Después junta trozos consecutivos de la misma voz en enunciados.
+  // Assigns a voice (0 low, 1 high) to each piece with Viterbi: the pitch of each piece is the evidence
+  // (robust to outliers) and the preceding silence says whether an utterance change is likely.
+  // Then it merges consecutive pieces of the same voice into utterances.
   function groupByVoice(pcs, f0s, voiced, vc) {
     const n = pcs.length, c = [vc.lo, vc.hi];
-    const sd = [0, 1].map(k => {   // dispersión robusta de cada voz (MAD)
+    const sd = [0, 1].map(k => {   // robust spread of each voice (MAD)
       const v = f0s.filter((t, i) => voiced[i] >= 8 && (k ? t >= vc.mid : t > 0 && t < vc.mid)).map(t => Math.abs(t - c[k])).sort((p, q) => p - q);
       return Math.max(10, 1.4826 * (v.length ? v[v.length >> 1] : 12));
     });
@@ -96,7 +96,7 @@ const Core = (() => {
     return groups;
   }
 
-  // Sin dos voces distintas: elige los (K-1) silencios más largos como fronteras.
+  // Without two distinct voices: pick the (K-1) longest silences as boundaries.
   function groupByGaps(pcs, K) {
     if (pcs.length <= K) return pcs.map(([a, b]) => ({ a, b, voice: -1 }));
     const gaps = pcs.slice(1).map((p, i) => ({ i, g: p[0] - pcs[i][1] })).sort((p, q) => q.g - p.g).slice(0, K - 1).map(o => o.i).sort((p, q) => p - q);
@@ -106,23 +106,23 @@ const Core = (() => {
     return out;
   }
 
-  // Segmenta todo el audio. nPhrases = número de frases del PDF (si se conoce).
+  // Segments the whole audio. nPhrases = number of phrases in the PDF (if known).
   function segment(x, sr, nPhrases, opts = {}) {
     const pcs = pieces(x, sr, opts);
     const info = pcs.map(([a, b]) => pitch(x, sr, a, b));
     const f0s = info.map(o => o.f0), voiced = info.map(o => o.voiced);
     const vc = twoVoices(f0s.filter((t, i) => voiced[i] >= 3));
     let groups, mode;
-    if (vc) { groups = groupByVoice(pcs, f0s, voiced, vc); mode = 'voz'; }
+    if (vc) { groups = groupByVoice(pcs, f0s, voiced, vc); mode = 'voices'; }
     else {
-      mode = 'silencios';
+      mode = 'silences';
       const first = pcs[0] && (pcs[0][1] - pcs[0][0]) < 1.2;
       groups = groupByGaps(pcs, nPhrases ? 2 * nPhrases + (first ? 1 : 0) : pcs.length);
     }
     return { groups, mode, voices: vc, pieces: pcs.length };
   }
 
-  // Empareja enunciados en frases [primer idioma, segundo idioma]. skip = enunciados iniciales a omitir (portada).
+  // Pairs utterances into phrases [first language, second language]. skip = leading utterances to omit (cover).
   function pair(groups, nPhrases, skip) {
     const g = groups.slice(skip);
     const pairs = [];
@@ -134,15 +134,15 @@ const Core = (() => {
     return extra > 0 ? extra : 0;
   }
 
-  // ---------- alineación con el PDF ----------
+  // ---------- alignment with the PDF ----------
   function corr(a, b) {
     const n = a.length, ma = a.reduce((s, v) => s + v, 0) / n, mb = b.reduce((s, v) => s + v, 0) / n;
     let sab = 0, saa = 0, sbb = 0;
     for (let i = 0; i < n; i++) { const x = a[i] - ma, y = b[i] - mb; sab += x * y; saa += x * x; sbb += y * y; }
     return saa && sbb ? sab / Math.sqrt(saa * sbb) : 0;
   }
-  // Elige cuántos enunciados iniciales omitir comparando la duración de cada enunciado con la longitud
-  // del texto de la frase del PDF: con el desfase correcto la correlación es alta.
+  // Chooses how many leading utterances to skip by comparing each utterance's duration with the length
+  // of the PDF phrase text: with the right offset the correlation is high.
   function bestSkip(groups, texts, maxSkip = 6) {
     const N = texts.length, res = [];
     for (let s = 0; s <= Math.min(maxSkip, groups.length - 2); s++) {
@@ -158,8 +158,8 @@ const Core = (() => {
     return { skip: res[0].s, score: res[0].score, all: res };
   }
 
-  // ---------- ensamblado ----------
-  // chans: Float32Array[] (1 o 2 canales). Devuelve Float32Array[] del mismo número de canales.
+  // ---------- assembly ----------
+  // chans: Float32Array[] (1 or 2 channels). Returns Float32Array[] with the same number of channels.
   function assemble(chans, sr, items, cfg) {
     const nch = chans.length, padB = cfg.padBefore, padA = cfg.padAfter, fade = Math.round(sr * 0.01);
     const sec = t => Math.round(t * sr);
@@ -189,7 +189,7 @@ const Core = (() => {
     return out;
   }
 
-  // ---------- ZIP (sin compresión) ----------
+  // ---------- ZIP (no compression) ----------
   const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
   function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
   function zip(files) { // files: [{name, data:Uint8Array}]

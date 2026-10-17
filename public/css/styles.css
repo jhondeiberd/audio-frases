@@ -1,5 +1,5 @@
-/* Concepto: hoja de trabajo de estudio. Una columna, pasos numerados porque el proceso es una secuencia real.
-   El amarillo marcador solo aparece donde el PDF estaba subrayado. */
+/* Concept: a study worksheet. Single column, numbered steps because the process is a real sequence.
+   The marker yellow only appears where the PDF was highlighted. */
 :root{
   --bg:#F2F5F7; --surface:#FFFFFF; --ink:#13202A; --muted:#566673; --line:#D6DEE4;
   --primary:#0E4A5A; --on-primary:#FFFFFF; --primary-soft:#E1EEF1;

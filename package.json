@@ -1,8 +1,8 @@
 {
   "name": "audio-frases",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
-  "description": "Audio de frases: recorta, repite y crea audio a partir de una lista en PDF",
+  "description": "Phrase Audio: trim, repeat and build audio from a PDF phrase list",
   "engines": {
     "node": ">=18"
   },

@@ -1,13 +1,10 @@
-// ---- Voz Microsoft (gratis): voces neuronales de Edge ----
-// Orden de intento: 1) el servicio del propio sitio (/api/tts, función de Vercel)
-//                   2) el programa local opcional de la carpeta voz-local (útil al probar sin «vercel dev»)
+// ---- Microsoft voice (free): Edge neural voices, served by the site's own /api/tts (Vercel function) ----
 const MS_ENDPOINTS = [
-  { key: 'site', tts: '/api/tts', ping: '/api/tts' },
-  { key: 'local', tts: 'http://127.0.0.1:8765/tts', ping: 'http://127.0.0.1:8765/ping' }
+  { key: 'site', tts: '/api/tts', ping: '/api/tts' }
 ];
-let msEp = null;   // último punto de conexión que respondió bien
+let msEp = null;   // last endpoint that answered successfully
 const msOrder = () => msEp ? [msEp, ...MS_ENDPOINTS.filter(e => e !== msEp)] : MS_ENDPOINTS;
-// [id, nombre, país, género]; el texto visible se arma con el idioma de la interfaz
+// [id, name, country, gender]; the visible label is built in the interface language
 const MS_VOICES = {
   es: [['es-CO-SalomeNeural', 'Salomé', 'CO', 'f'], ['es-MX-DaliaNeural', 'Dalia', 'MX', 'f'], ['es-ES-ElviraNeural', 'Elvira', 'ES', 'f'], ['es-CO-GonzaloNeural', 'Gonzalo', 'CO', 'm'], ['es-MX-JorgeNeural', 'Jorge', 'MX', 'm'], ['es-ES-AlvaroNeural', 'Álvaro', 'ES', 'm']],
   en: [['en-US-GuyNeural', 'Guy', 'US', 'm'], ['en-US-DavisNeural', 'Davis', 'US', 'm'], ['en-US-JennyNeural', 'Jenny', 'US', 'f'], ['en-US-AriaNeural', 'Aria', 'US', 'f'], ['en-GB-RyanNeural', 'Ryan', 'GB', 'm']],
@@ -26,8 +23,8 @@ function fillMsVoices() {
   });
 }
 
-// Prueba cada punto de conexión por orden. Si uno no existe (404/405) o no responde, pasa al siguiente;
-// si existe pero falla (403, 429, 502…), lo recuerda para explicarlo si ninguno funciona.
+// Tries each endpoint in order. If one does not exist (404/405) or does not answer, it moves on to the next;
+// if one exists but fails (403, 429, 502...), the failure is remembered to explain it if none of them works.
 async function msRequest(kind, init) {
   let failure = null, limited = false;
   for (const ep of msOrder()) {
@@ -35,18 +32,18 @@ async function msRequest(kind, init) {
       const r = await fetch(kind === 'ping' ? ep.ping : ep.tts, init);
       if (r.ok) { msEp = ep; return { r, ep }; }
       if (r.status !== 404 && r.status !== 405 && !failure) { failure = await msFailure(r); limited = r.status === 429; }
-    } catch (e) { /* sin conexión con este punto: probar el siguiente */ }
+    } catch (e) { /* no connection to this endpoint: try the next one */ }
   }
   const err = new Error(failure ? t('err.ms.failed', { x: failure }) : t('err.ms.notfound')); err.rateLimited = limited; throw err;
 }
-// el servidor responde con texto corto; el mensaje visible se arma según el código HTTP para que salga en el idioma de la interfaz
+// the server answers with short text; the visible message is built from the HTTP status so it appears in the interface language
 async function msFailure(r) {
   if (r.status === 403 || r.status === 429 || r.status === 400) return t('err.ms.' + r.status);
   const d = (await r.text()).slice(0, 160).trim(); return d || t('err.ms.other', { s: r.status });
 }
 const msSynth = async (text, voice) => (await msRequest('tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, voice }) })).r.arrayBuffer();
-// Varias frases con la misma voz en una sola llamada (una conexión a Microsoft para todo el grupo).
-// Si Microsoft limita el uso (429) se espera y se reintenta; los clips ya hechos quedan guardados en S.clips.
+// Several phrases with the same voice in one call (a single Microsoft connection for the whole group).
+// If Microsoft throttles (429) we wait and retry; clips already done stay cached in S.clips.
 const MS_BATCH = 8;
 async function msSynthMany(texts, voice, onWait) {
   for (let a = 0; ; a++) {
@@ -77,11 +74,11 @@ $('msTest').addEventListener('click', async () => {
   try { const { ep } = await msRequest('ping', {}); msg.textContent = t('ms.active', { ep: t('ms.ep.' + ep.key) }); }
   catch (e) { msg.textContent = '✗ ' + e.message; }
 });
-// el motor de síntesis activo (ElevenLabs o Microsoft) para construir el audio
+// the active synthesis engine (ElevenLabs or Microsoft) used to build the audio
 const synthModel = () => prov() === 'ms' ? 'ms' : $('elModel').value;
 const voiceId = l => prov() === 'ms' ? $('msS' + l).value : $('elV' + l).value.trim();
 const synth = (t, v) => prov() === 'ms' ? msSynth(t, v) : elSynth(t, v);
-// probar una voz y recordar la elección
+// preview a voice and remember the choice
 let prevSrc = null;
 async function previewVoice(k) {
   const msg = $('msMsg'), first = S.sel.size ? S.rows[[...S.sel].sort((a, b) => a - b)[0]] : S.rows[0];
@@ -98,7 +95,7 @@ async function previewVoice(k) {
   $('msP' + k).addEventListener('click', () => previewVoice(k));
   $('msS' + k).addEventListener('change', () => { store.set('msS' + k, $('msS' + k).value); $('msMsg').textContent = t('ms.changed'); });
 });
-// estado del servicio: se comprueba al mostrar el panel (como máximo cada 4 s)
+// service status: checked when the panel is shown (at most every 4 s)
 let msChecked = 0;
 async function checkMs(force) {
   if (!force && Date.now() - msChecked < 4000) return; msChecked = Date.now();

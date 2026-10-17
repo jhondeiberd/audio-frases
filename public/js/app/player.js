@@ -1,4 +1,4 @@
-// ---- reproductor del resultado ----
+// ---- result player ----
 let outSrc = null, outStart = 0, outOff = 0, raf = 0;
 function paintTime(t) { const d = S.outBuf ? S.outBuf.duration : 0; $('time').textContent = fmt(t) + ' / ' + fmt(d); $('seek').value = d ? Math.round(1000 * t / d) : 0; }
 function stopOut(keep) { cancelAnimationFrame(raf); try { outSrc && (outSrc.onended = null, outSrc.stop()); } catch (e) {} outSrc = null; if (!keep) { outOff = 0; } $('pp').textContent = '▶'; }

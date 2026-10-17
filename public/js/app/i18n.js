@@ -1,6 +1,6 @@
-// ---- Idioma de la interfaz (ES / EN) ----
-// Textos fijos del HTML: atributos data-i18n (texto), data-i18n-ph (placeholder), data-i18n-title, data-i18n-aria.
-// Textos dinámicos del código: t('clave', { n: 3 }). Formas plurales: «{n|frase|frases}».
+// ---- Interface language (ES / EN) ----
+// Static HTML text: data-i18n (text), data-i18n-ph (placeholder), data-i18n-title and data-i18n-aria attributes.
+// Dynamic text from code: t('key', { n: 3 }). Plural forms: "{n|phrase|phrases}" (singular|plural).
 const I18N = {
   es: {
     'doc.title': 'Audio de frases',
@@ -36,7 +36,7 @@ const I18N = {
     'br.none': 'No hay voces de este idioma en el dispositivo',
     'lang.es': 'Español', 'lang.en': 'Inglés', 'lang.fr': 'Francés', 'lang.pt': 'Portugués', 'lang.de': 'Alemán', 'lang.it': 'Italiano',
     'gender.f': 'mujer', 'gender.m': 'hombre', 'country.CO': 'Colombia', 'country.MX': 'México', 'country.ES': 'España', 'country.US': 'EE. UU.', 'country.GB': 'Reino Unido',
-    // estados y avisos
+    // statuses and notices
     'st.pdf.read': 'Leyendo el PDF…', 'err.pdf.lib': 'No se pudo cargar el lector de PDF.', 'err.pdf.none': 'No encontré frases numeradas en el PDF.', 'err.pdf.read': 'No pude leer ese PDF.',
     'st.nohl': 'No encontré frases subrayadas; dejé todas seleccionadas.',
     'st.audio.open': 'Abriendo el audio…', 'err.audio': 'No pude abrir ese audio. Prueba con un MP3 o WAV.', 'st.seg': 'Buscando dónde empieza y termina cada frase…',
@@ -52,7 +52,7 @@ const I18N = {
     'st.ask.ms': 'Pidiendo las voces a Microsoft…', 'st.ms.wait': 'Microsoft está limitando las peticiones; esperando {s} s para reintentar…', 'st.ask.el': 'Pidiendo las voces a ElevenLabs…', 'st.voices.done': 'Voces listas: {d} de {n}',
     'say.progress': 'Frase {i} de {n} · {l} {r}/{R}', 'say.stopped': 'Detenido.', 'say.end': 'Terminó la lista.',
     'save.ok': 'Guardado como {f}', 'save.cancel': 'Guardado cancelado.', 'save.dl': 'Descargando {f} (carpeta de descargas del navegador)', 'save.mp3': 'Audio MP3', 'save.wav': 'Audio WAV',
-    'ms.ep.site': 'servicio del sitio', 'ms.ep.local': 'programa local', 'ms.active': '✓ Servicio de voz activo ({ep}).', 'ms.testing': 'Probando…', 'ms.sampling': 'Generando la muestra…', 'ms.playing': 'Reproduciendo: «{x}»',
+    'ms.ep.site': 'servicio del sitio', 'ms.active': '✓ Servicio de voz activo ({ep}).', 'ms.testing': 'Probando…', 'ms.sampling': 'Generando la muestra…', 'ms.playing': 'Reproduciendo: «{x}»',
     'ms.changed': 'Voz cambiada. Pulsa «Crear audio con voz Microsoft» para aplicarla al audio.', 'ms.sample.default': 'Hello, this is a voice test.',
     'err.ms.failed': 'El servicio de voz falló: {x}', 'err.ms.notfound': 'No encuentro el servicio de voz. En el sitio publicado debería estar activo; si pruebas en tu equipo, abre la página con «vercel dev» (http://localhost:3000), no con Live Server ni como archivo.',
     'err.ms.403': 'el servicio rechazó la petición (origen no permitido)', 'err.ms.429': 'demasiadas peticiones; espera un momento', 'err.ms.400': 'texto o voz no válidos', 'err.ms.other': 'respondió {s}',
@@ -110,7 +110,7 @@ const I18N = {
     'st.ask.ms': 'Requesting voices from Microsoft…', 'st.ms.wait': 'Microsoft is limiting requests; waiting {s} s before retrying…', 'st.ask.el': 'Requesting voices from ElevenLabs…', 'st.voices.done': 'Voices ready: {d} of {n}',
     'say.progress': 'Phrase {i} of {n} · {l} {r}/{R}', 'say.stopped': 'Stopped.', 'say.end': 'The list has finished.',
     'save.ok': 'Saved as {f}', 'save.cancel': 'Save cancelled.', 'save.dl': 'Downloading {f} (your browser’s downloads folder)', 'save.mp3': 'MP3 audio', 'save.wav': 'WAV audio',
-    'ms.ep.site': 'site service', 'ms.ep.local': 'local program', 'ms.active': '✓ Voice service active ({ep}).', 'ms.testing': 'Testing…', 'ms.sampling': 'Generating the sample…', 'ms.playing': 'Playing: “{x}”',
+    'ms.ep.site': 'site service', 'ms.active': '✓ Voice service active ({ep}).', 'ms.testing': 'Testing…', 'ms.sampling': 'Generating the sample…', 'ms.playing': 'Playing: “{x}”',
     'ms.changed': 'Voice changed. Press “Create audio with Microsoft voice” to apply it to the audio.', 'ms.sample.default': 'Hello, this is a voice test.',
     'err.ms.failed': 'The voice service failed: {x}', 'err.ms.notfound': 'I cannot find the voice service. On the published site it should be active; if you are testing on your computer, open the page with “vercel dev” (http://localhost:3000), not with Live Server or as a file.',
     'err.ms.403': 'the service rejected the request (origin not allowed)', 'err.ms.429': 'too many requests; wait a moment', 'err.ms.400': 'invalid text or voice', 'err.ms.other': 'answered {s}',
@@ -125,7 +125,7 @@ const i18nFmt = (s, p) => s.replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, (_, k, a, b
 const t = (k, p) => { const s = (I18N[LANG] && I18N[LANG][k]) ?? I18N.es[k]; return s === undefined ? k : i18nFmt(s, p); };
 const langName = c => t('lang.' + c);
 
-// textos fijos del HTML
+// static HTML text
 function applyStatic() {
   document.documentElement.lang = LANG; document.title = t('doc.title');
   document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
@@ -135,7 +135,7 @@ function applyStatic() {
   document.querySelectorAll('#uiLang button').forEach(b => { const on = b.dataset.lang === LANG; b.setAttribute('aria-pressed', on); b.classList.toggle('on', on); });
   $('appVer').title = t('ver.full', { v: APP_VERSION.version, d: APP_VERSION.date }) + '\n' + APP_VERSION.notes;
 }
-// nombres de idioma por defecto («Español» ↔ «Spanish»): solo se traducen si el usuario no escribió otro nombre
+// default language names ("Español" <-> "Spanish"): only translated when the user has not typed a custom name
 function translateDefaultNames() {
   const known = new Set(['es', 'en'].flatMap(l => ['es', 'en', 'fr', 'pt', 'de', 'it'].map(c => I18N[l]['lang.' + c].toLowerCase())));
   [0, 1].forEach(k => { const el = $('name' + k), v = el.value.trim(); if (!v || known.has(v.toLowerCase())) { const c = langOf(v) || $('lc' + k).value; el.value = langName(c); store.set('name' + k, el.value); } });
@@ -146,7 +146,7 @@ function fillLangOptions() {
 function setLang(l, first) {
   LANG = l === 'en' ? 'en' : 'es'; store.set('lang', LANG);
   applyStatic(); fillLangOptions();
-  if (!first) { translateDefaultNames(); fillMsVoices(); paintFileNames(); renderRows(); paintCfg(); updatePanels(); if (typeof checkMs === 'function' && voz() && S.rows.length && prov() === 'ms') checkMs(true); }
+  if (!first) { translateDefaultNames(); fillMsVoices(); paintFileNames(); renderRows(); paintCfg(); updatePanels(); if (typeof checkMs === 'function' && textMode() && S.rows.length && prov() === 'ms') checkMs(true); }
   if ($('themeBtn') && typeof paintTheme === 'function') paintTheme();
 }
 const detectLang = () => { const s = store.get('lang', ''); if (s === 'es' || s === 'en') return s; return /^en/i.test(navigator.language || '') ? 'en' : 'es'; };

@@ -1,11 +1,11 @@
-/* Estado compartido y utilidades de UI */
+/* Shared state and UI helpers */
 const $ = id => document.getElementById(id);
 const S = { rows: [], buf: null, chans: null, sr: 0, x16: null, seg: null, skip: 0, pairs: [], sel: new Set(), out: null, mp3: null, base: 'audio', pdfName: '', pdfBase: 'frases', clips: new Map() };
 let actx = null, curSrc = null;
 const getCtx = () => (actx ||= new (window.AudioContext || window.webkitAudioContext)());
 const fmt = t => { t = Math.max(0, Math.round(t)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
 const tick = () => new Promise(r => setTimeout(r, 0));
-// Aviso emergente (toast): siempre visible, aunque la página esté desplazada. Se cierra solo o con la ✕.
+// Toast notice: always visible even when the page is scrolled. It closes on its own or with the ✕ button.
 let toastTimer = null;
 function toast(msg, kind) {
   let box = document.getElementById('toasts');
@@ -18,6 +18,6 @@ function toast(msg, kind) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => box.replaceChildren(), 10000);
 }
 const setStatus = (m, err) => {
-  if (err) { $('status').textContent = ''; $('status').className = 'status'; toast(m, 'err'); return; }   // los errores salen como aviso emergente
+  if (err) { $('status').textContent = ''; $('status').className = 'status'; toast(m, 'err'); return; }   // errors are shown as a toast
   $('status').textContent = m; $('status').className = 'status';
 };

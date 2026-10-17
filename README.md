@@ -1,74 +1,67 @@
-# Audio de frases
+# Phrase Audio
 
-Sube una lista de frases en PDF (3 columnas: número, idioma 1, idioma 2) y, opcionalmente, su audio.
-Genera un MP3 nuevo con las frases seleccionadas y las repeticiones que indiques por idioma.
+Upload a PDF phrase list (3 columns: number, language 1, language 2) and, optionally, its audio.
+It builds a new MP3 with the selected phrases and the repetitions you choose per language.
 
-- **Con audio:** todo se procesa en el navegador.
-- **Sin audio:** la voz sale del texto del PDF con voces neuronales de Microsoft (gratis, vía `/api/tts`) o con ElevenLabs (con tu clave).
+- **With audio:** everything is processed in the browser.
+- **Without audio:** speech is generated from the PDF text with free Microsoft neural voices (via `/api/tts`) or ElevenLabs (your own key).
 
-## Estructura
+## Structure
 
 ```
-api/tts.js                 función de Vercel: texto -> MP3 con voces de Microsoft
-package.json               dependencia de la función (msedge-tts)
-vercel.json                despliegue: publica /public, límites de la función, cabeceras
-public/                    lo que se sirve al navegador
-  index.html               estructura de la página
-  favicon.svg / .png       icono
-  css/styles.css           estilos
-  js/core/audio-engine.js  dominio: segmentación, voces, emparejado, MP3/ZIP (sin DOM)
-  js/app/                  interfaz y flujo (orden de carga en index.html)
+api/tts.js                 Vercel function: text -> MP3 with Microsoft voices
+package.json               function dependency (msedge-tts, pinned)
+vercel.json                deployment: serves /public, function limits, headers
+scripts/release.js         version bump + git commit/tag/push + Vercel deploy
+public/                    what the browser receives
+  index.html               page structure
+  favicon.svg / .png       icon
+  css/styles.css           styles
+  js/core/audio-engine.js  domain: segmentation, voices, pairing, MP3/ZIP (no DOM)
+  js/app/                  UI and flow (load order in index.html)
     config.js              ELEVEN = true/false
-    version.js             versión visible en la cabecera (la actualiza npm run release)
-    state.js               estado compartido y utilidades
-    prefs.js               preferencias locales
-    i18n.js                interfaz en español / inglés (diccionario + t('clave'))
-    theme.js               tema claro / oscuro
-    dropzones.js           carga de archivos
-    pdf-parser.js          lectura del PDF
-    audio-loader.js        decodificación del audio
-    phrase-table.js        tabla de frases
-    generator.js           generación del audio
-    voice-browser.js       paneles de voz y voz del navegador
-    voice-microsoft.js     cliente de la voz Microsoft (/api/tts)
-    voice-elevenlabs.js    ElevenLabs y ensamblado del audio sintetizado
-    player.js              reproductor del resultado
-    save.js                guardado
-    bootstrap.js           arranque
+    version.js             version shown in the header (updated by npm run release)
+    state.js               shared state and helpers
+    prefs.js               local preferences
+    i18n.js                ES / EN interface (dictionary + t('key'))
+    theme.js               light / dark theme
+    dropzones.js           file loading
+    pdf-parser.js          PDF reading
+    audio-loader.js        audio decoding
+    phrase-table.js        phrase table
+    generator.js           audio generation
+    voice-browser.js       voice panels and browser voice
+    voice-microsoft.js     Microsoft voice client (/api/tts)
+    voice-elevenlabs.js    ElevenLabs and synthesized audio assembly
+    player.js              result player
+    save.js                saving
+    bootstrap.js           startup
 ```
 
-## Desarrollo local
+## Local development
 
 ```
 npm install
 vercel dev
 ```
 
-`vercel dev` sirve la página y la función `/api/tts` juntas. Sin Vercel, `npx serve public` sirve solo la página;
-en ese caso la voz Microsoft usa el programa de `voz-local` si está abierto.
+`vercel dev` serves the page and the `/api/tts` function together (http://localhost:3000).
 
-## Desplegar
+## Notes
 
-```
-vercel --prod
-```
+- `/api/tts` only accepts calls from the site itself. To allow other origins, set `TTS_ALLOWED_ORIGINS`
+  (comma-separated list) in the Vercel project.
+- The Microsoft voice uses an unofficial service: it may stop working if Microsoft changes its protocol.
+- The ElevenLabs key is stored only in the browser of whoever types it.
+- Interface language (ES/EN) and light/dark theme: header buttons. Texts live in `public/js/app/i18n.js`
+  (same keys in `es` and `en`); in HTML use `data-i18n="key"`. Code and comments are always in English.
 
-## Notas
-
-- `/api/tts` solo acepta llamadas desde el propio sitio. Para permitir otros orígenes, define la variable
-  `TTS_ALLOWED_ORIGINS` (lista separada por comas) en el proyecto de Vercel.
-- La voz Microsoft usa un servicio no oficial: puede dejar de funcionar si Microsoft cambia su protocolo.
-- La clave de ElevenLabs se guarda solo en el navegador de quien la escribe.
-
-## Idioma y tema
-
-- Idioma de la interfaz (ES/EN): botones de la cabecera; se recuerda la elección y, la primera vez, se usa el idioma del navegador.
-  Para añadir o corregir un texto: `public/js/app/i18n.js` (mismas claves en `es` y `en`); en el HTML, atributo `data-i18n="clave"`.
-- Tema claro/oscuro: botón de la cabecera; sin elección guardada se sigue el del sistema.
-
-## Publicar con versión
+## Release (GitHub + Vercel)
 
 ```
-npm run release -- 1.3.0 "Motivo del cambio"
+npm run release -- 1.3.0 "Reason for the change"
 ```
-Actualiza `version.js` y `package.json` y ejecuta `vercel --prod` con `--meta version=… --meta description=…`.
+Updates `version.js` and `package.json`, then commits (`v1.3.0: reason`), creates the annotated tag `v1.3.0`,
+pushes to `origin` with the tag, and finally runs `vercel --prod` with `--meta version=… --meta description=…`.
+If the git step fails, nothing is deployed. Flags: `--no-git`, `--no-deploy`.
+Requires a git repository with an `origin` remote (GitHub). If Vercel is connected to the GitHub repo, the push may also start its own deployment.

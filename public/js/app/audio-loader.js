@@ -6,7 +6,7 @@ async function handleAudio(file) {
     const buf = await getCtx().decodeAudioData(ab);
     S.buf = buf; S.sr = buf.sampleRate; S.chans = [buf.getChannelData(0)]; if (buf.numberOfChannels > 1) S.chans.push(buf.getChannelData(1));
     S.base = file.name.replace(/\.[^.]+$/, '') || 'audio';
-    // copia mono a 16 kHz para el análisis
+    // mono 16 kHz copy for the analysis
     const oc = new OfflineAudioContext(1, Math.ceil(buf.duration * 16000), 16000), src = oc.createBufferSource();
     src.buffer = buf; src.connect(oc.destination); src.start();
     S.x16 = (await oc.startRendering()).getChannelData(0);

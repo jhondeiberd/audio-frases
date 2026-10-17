@@ -1,5 +1,5 @@
-// ---- soltar archivos ----
-// texto de las zonas de carga: nombre del archivo cargado o indicación por defecto (se repinta al cambiar de idioma)
+// ---- drop zones ----
+// drop zone text: loaded file name or the default hint (repainted when the language changes)
 function paintFileNames() {
   $('namePdf').textContent = S.rows.length && S.pdfName ? t('pdf.info', { name: S.pdfName, n: S.rows.length, h: S.rows.filter(r => r.hl).length }) : t('drop.pdf.s');
   $('nameAudio').textContent = S.buf && S.audioName ? t('audio.info', { name: S.audioName, d: fmt(S.buf.duration) }) : t('drop.audio.s');

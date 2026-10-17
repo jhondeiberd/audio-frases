@@ -32,8 +32,8 @@ $('elLoad').addEventListener('click', async () => {
 });
 [0, 1].forEach(k => $('elS' + k).addEventListener('change', () => { if ($('elS' + k).value) { $('elV' + k).value = $('elS' + k).value; store.set('elV' + k, $('elV' + k).value); estimate(); } }));
 $('elForget').addEventListener('click', () => { $('elKey').value = ''; store.set('elKey', ''); $('elMsg').textContent = t('el.forgot'); estimate(); });
-// Recorta el silencio de cada frase sin comerse los sonidos suaves del inicio (s, f, h, n, m…) ni la cola.
-// Umbral muy bajo (-66 dB) y márgenes generosos: es preferible dejar un poco de silencio que perder una sílaba.
+// Trims the silence around each phrase without eating soft sounds at the start (s, f, h, n, m...) or the tail.
+// Very low threshold (-66 dB) and generous margins: better to keep a little silence than to lose a syllable.
 function trimSilence(x, sr) {
   const th = 0.0005, lead = Math.round(sr * 0.12), tail = Math.round(sr * 0.15); let a = 0, b = x.length - 1;
   while (a < b && Math.abs(x[a]) < th) a++; while (b > a && Math.abs(x[b]) < th) b--;
@@ -56,9 +56,9 @@ async function buildFromEleven(c, prog) {
       done++; prog.value = 15 * done / Math.max(1, list.length); setStatus(t('st.voices.done', { d: done, n: list.length }));
     }
   };
-  if (prov() === 'ms') await msFill(list, ctx, sr, prog);   // Microsoft: grupos de frases por conexión, con espera si limita el uso
+  if (prov() === 'ms') await msFill(list, ctx, sr, prog);   // Microsoft: groups of phrases per connection, waiting if it throttles
   else { await Promise.all([worker(), worker(), worker()]); if (failure) throw failure; }
-  // línea de tiempo con todos los clips separados por silencio; el ensamblador recorta de ahí
+  // timeline with every clip separated by silence; the assembler cuts the pieces from it
   const gap = new Float32Array(Math.round(sr * 1.2)), parts = [], range = new Map(); let cur = 0;
   const place = k => { if (range.has(k)) return; parts.push(gap); cur += gap.length; const d = S.clips.get(k); range.set(k, [cur / sr, (cur + d.length) / sr]); parts.push(d); cur += d.length; };
   rows.forEach(r => [0, 1].forEach(l => { if (c.reps[l] > 0) place(keyOf(l, r)); }));

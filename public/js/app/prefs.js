@@ -1,4 +1,4 @@
-// ---- preferencias (solo comodidad) ----
+// ---- preferences (convenience only) ----
 const store = { get(k, d) { try { const v = localStorage.getItem('af.' + k); return v === null ? d : v; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('af.' + k, v); } catch (e) {} } };
 const cfg = { reps: [+store.get('r0', 1), +store.get('r1', 3)] };
 function readCfg() {

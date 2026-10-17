@@ -1,2 +1,2 @@
-/* Configuración de build: true = crea MP3 con ElevenLabs también sin audio (hosting propio) */
+/* Build configuration: true = also create MP3s with ElevenLabs when there is no source audio (own hosting) */
 const ELEVEN = true;

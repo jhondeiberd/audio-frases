@@ -1,17 +1,17 @@
-// ---- sin audio: voz desde el texto ----
-const LANGS = ['es', 'en', 'fr', 'pt', 'de', 'it'];   // los nombres visibles salen de i18n (langName)
+// ---- no audio: speech from the PDF text ----
+const LANGS = ['es', 'en', 'fr', 'pt', 'de', 'it'];   // visible names come from i18n (langName)
 const langOf = nm => { const t = (nm || '').trim().toLowerCase(); const m = [[/^espa|^spanish/, 'es'], [/^ingl|^english/, 'en'], [/^fran|^french/, 'fr'], [/^port/, 'pt'], [/^alem|^german/, 'de'], [/^ital/, 'it']].find(([r]) => r.test(t)); return m ? m[1] : null; };
 function autoLang(k) { const c = langOf($('name' + k).value); if (c) $('lc' + k).value = c; fillBrowserVoices(); }
-const voz = () => !S.buf;
+const textMode = () => !S.buf;   // no source audio: speech is generated from the PDF text
 const prov = () => ELEVEN ? $('provider').value : 'browser';
 const canSpeak = () => 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 let speaking = false, stopFlag = false;
 
 function updatePanels() {
-  const v = voz() && S.rows.length > 0;
+  const v = textMode() && S.rows.length > 0;
   $('voicePanel').hidden = !v; $('skipLbl').hidden = v; $('skipHint').hidden = v;
   $('provWrap').hidden = !ELEVEN; $('elBlock').hidden = !(v && prov() === 'eleven'); $('brBlock').hidden = !(v && prov() === 'browser'); $('msBlock').hidden = !(v && prov() === 'ms'); if (v && prov() === 'ms' && typeof checkMs === 'function') checkMs(false);
-  $('go').textContent = t(!voz() ? 'go.make' : (prov() === 'eleven' ? 'go.el' : prov() === 'ms' ? 'go.ms' : 'go.listen'));
+  $('go').textContent = t(!textMode() ? 'go.make' : (prov() === 'eleven' ? 'go.el' : prov() === 'ms' ? 'go.ms' : 'go.listen'));
   const n0 = $('name0').value || t('name.fallback1'), n1 = $('name1').value || t('name.fallback2');
   ['elL', 'brL', 'msL'].forEach(p => { $(p + '0').textContent = t('voice.of', { n: n0 }); $(p + '1').textContent = t('voice.of', { n: n1 }); });
   $('voiceNote').textContent = t(ELEVEN ? (prov() === 'eleven' ? 'note.el' : 'note.br') : 'note.br2');

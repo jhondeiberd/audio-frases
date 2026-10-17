@@ -1,5 +1,5 @@
-// ---- guardar ----
-// Edge/Chrome: deja elegir carpeta y nombre; en otros navegadores, descarga normal
+// ---- save ----
+// Edge/Chrome: lets the user pick the folder and name; other browsers get a normal download
 $('save').addEventListener('click', async () => {
   const name = S.fileName + '.' + S.ext;
   if (window.showSaveFilePicker) {
