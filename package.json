@@ -1,0 +1,16 @@
+{
+  "name": "audio-frases",
+  "version": "1.2.2",
+  "private": true,
+  "description": "Audio de frases: recorta, repite y crea audio a partir de una lista en PDF",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "msedge-tts": "2.1.0"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "release": "node scripts/release.js"
+  }
+}
