@@ -38,12 +38,21 @@ async function parsePage(page) {
   const nums = items.filter(i => /^\d{1,3}$/.test(i.s) && i.x < minX + pageW * 0.12).sort((a, b) => b.y - a.y);
   if (!nums.length) return { rows: [] };
   const rows = [];
+  // Joins neighbouring text items into columns (items closer than 14 pt belong to the same column).
+  const groupCols = band => { const cols = []; band.forEach(it => { const c = cols[cols.length - 1]; if (c && it.x - c.x1 < 14) { c.s += ' ' + it.s; c.x1 = it.x + it.w; c.items.push(it); } else cols.push({ s: it.s, x0: it.x, x1: it.x + it.w, items: [it] }); }); return cols; };
   const sp = nums.length > 1 ? (nums[0].y - nums[nums.length - 1].y) / (nums.length - 1) : 14;
-  nums.forEach((nm, k) => {
+  // First pass: the text band of each numbered row.
+  const bands = nums.map((nm, k) => {
     const hi = k === 0 ? nm.y + sp / 2 : (nums[k - 1].y + nm.y) / 2, lo = k === nums.length - 1 ? nm.y - sp / 2 - 4 : (nm.y + nums[k + 1].y) / 2;
-    const band = items.filter(i => i !== nm && i.y <= hi && i.y > lo && !nums.includes(i)).sort((a, b) => a.x - b.x);
-    const cols = [];
-    band.forEach(it => { const c = cols[cols.length - 1]; if (c && it.x - (c.x1) < 14) { c.s += ' ' + it.s; c.x1 = it.x + it.w; c.items.push(it); } else cols.push({ s: it.s, x0: it.x, x1: it.x + it.w, items: [it] }); });
+    return items.filter(i => i !== nm && i.y <= hi && i.y > lo && !nums.includes(i)).sort((a, b) => a.x - b.x);
+  });
+  // Where the second column starts on this page (median over the rows that split cleanly). A long first-column
+  // line that ends close to it would otherwise be glued to the second column.
+  const starts = bands.map(b => groupCols(b)).filter(c => c.length >= 2).map(c => c[1].x0).sort((a, b) => a - b);
+  const x2 = starts.length ? starts[starts.length >> 1] : null;
+  nums.forEach((nm, k) => {
+    const band = bands[k];
+    const cols = x2 == null ? groupCols(band) : [...groupCols(band.filter(i => i.x < x2 - 4)), ...groupCols(band.filter(i => i.x >= x2 - 4))];
     const hl = cols.map(c => {
       const y = c.items[0].y, h = c.items[0].h;
       const [ax, ay] = vp.convertToViewportPoint(c.x0, y), [bx] = vp.convertToViewportPoint(c.x1, y);

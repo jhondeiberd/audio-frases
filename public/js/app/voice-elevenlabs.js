@@ -41,6 +41,8 @@ function trimSilence(x, sr) {
 }
 async function buildFromEleven(c, prog) {
   const rows = [...S.sel].sort((a, b) => a - b).map(i => S.rows[i]), ctx = getCtx(), sr = ctx.sampleRate, model = synthModel();
+  const empty = rows.filter(r => [0, 1].some(l => c.reps[l] > 0 && !r.t[l].trim())).map(r => r.n);
+  if (empty.length) throw new Error(t('err.emptytext', { n: empty.join(', ') }));
   const keyOf = (l, r) => model + '|' + voiceId(l) + '|' + r.t[l];
   const jobs = new Map();
   rows.forEach(r => [0, 1].forEach(l => { if (c.reps[l] > 0) { const k = keyOf(l, r); if (!S.clips.has(k) && !jobs.has(k)) jobs.set(k, { text: r.t[l], voice: voiceId(l) }); } }));

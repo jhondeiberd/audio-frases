@@ -9,7 +9,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.png" sizes="64x64" type="image/png">
 <link rel="stylesheet" href="css/styles.css">
-</head><body>
+</head><body id="top">
 <div class="wrap">
   <header>
     <div class="top">
@@ -116,7 +116,7 @@
     <progress id="prog" max="100" value="0" hidden></progress>
     <div class="result" id="result" hidden>
       <div class="player"><button class="btn sm" type="button" id="pp" data-i18n-aria="player.pp" aria-label="Play or pause">▶</button><input type="range" id="seek" min="0" max="1000" value="0" data-i18n-aria="player.seek" aria-label="Position"><output id="time">0:00 / 0:00</output></div>
-      <div class="bar"><button class="btn" type="button" id="save" data-i18n="save">Download MP3</button><span class="hint" id="saveHint"></span></div>
+      <div class="bar"><button class="btn" type="button" id="save" data-i18n="save">Download MP3</button><span class="hint" id="saveHint"></span><a class="btn" href="#top" id="toTop" data-i18n="toTop">↑ Back to top</a></div>
     </div>
   </section>
 </div>
