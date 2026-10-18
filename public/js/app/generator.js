@@ -1,5 +1,5 @@
 // ---- generate ----
-function selectedItems() { return [...S.sel].sort((a, b) => a - b).map(i => S.pairs[i]).filter(Boolean).map(p => [[p[0].a, p[0].b], [p[1].a, p[1].b]]); }
+function selectedItems() { return [...S.sel].sort((a, b) => a - b).filter(i => S.pairs[i]).map(i => { const p = S.pairs[i]; return [[p[0].a, p[0].b], [p[1].a, p[1].b], S.rows[i].rep || 1]; }); }
 function estimate() {
   updatePanels(); updateGo(); paintCfgLabelsOnly();
   if (textMode()) {
@@ -10,7 +10,13 @@ function estimate() {
   }
   if (!S.seg) { $('estimate').textContent = ''; return; }
   const c = readCfg(), items = selectedItems(); let total = 0;
-  items.forEach((it, k) => { [0, 1].forEach(l => { const d = it[l][1] - it[l][0] + c.padBefore + c.padAfter; if (c.reps[l]) total += d * c.reps[l] + c.gapRep * (c.reps[l] - 1); }); if (c.reps[0] && c.reps[1]) total += c.gapLang; if (k < items.length - 1) total += c.gapPhrase; });
+  items.forEach((it, k) => {
+    let row = 0;
+    [0, 1].forEach(l => { const d = it[l][1] - it[l][0] + c.padBefore + c.padAfter; if (c.reps[l]) row += d * c.reps[l] + c.gapRep * (c.reps[l] - 1); });
+    if (c.reps[0] && c.reps[1]) row += c.gapLang;
+    total += row * it[2] + c.gapPhrase * (it[2] - 1);
+    if (k < items.length - 1) total += c.gapPhrase;
+  });
   $('estimate').textContent = items.length ? t('est.dur', { n: items.length, d: fmt(total) }) : '';
 }
 function paintCfgLabelsOnly() { $('th0').textContent = $('name0').value || t('lang.1c'); $('th1').textContent = $('name1').value || t('lang.2c'); }

@@ -33,7 +33,7 @@ function renderRows() {
   const tb = $('rows'); tb.innerHTML = '';
   const has = S.rows.length > 0; updatePanels();
   ['selHl', 'selAll', 'selNone'].forEach(id => $(id).disabled = !has);
-  if (!has) { tb.innerHTML = ''; const er = document.createElement('tr'), ec = document.createElement('td'); ec.colSpan = 5; ec.className = 'empty'; ec.textContent = t('rows.empty'); er.appendChild(ec); tb.appendChild(er); $('count').textContent = ''; $('diag').innerHTML = ''; updateGo(); return; }
+  if (!has) { tb.innerHTML = ''; const er = document.createElement('tr'), ec = document.createElement('td'); ec.colSpan = 6; ec.className = 'empty'; ec.textContent = t('rows.empty'); er.appendChild(ec); tb.appendChild(er); $('count').textContent = ''; $('diag').innerHTML = ''; updateGo(); return; }
   const frag = document.createDocumentFragment();
   S.rows.forEach((r, i) => {
     const tr = document.createElement('tr'); tr.className = (r.hl ? 'hl ' : '') + (S.sel.has(i) ? '' : 'off') + (S.seg && badPair(i) ? ' bad' : ''); tr.dataset.i = i;
@@ -44,11 +44,19 @@ function renderRows() {
     [0, 1].forEach(k => { const c = td('t'); const sp = document.createElement('span'); sp.textContent = r.t[k]; c.appendChild(sp); tr.appendChild(c); });
     const pl = td('pl');
     [0, 1].forEach(k => { const b = document.createElement('button'); b.type = 'button'; b.className = 'play'; b.dataset.i = i; b.dataset.k = k; b.textContent = '▶'; b.title = t('row.play', { l: t(k ? 'lang.2' : 'lang.1') }); b.disabled = textMode() ? !canSpeak() : !S.pairs[i]; pl.appendChild(b); pl.appendChild(document.createTextNode(' ')); });
-    tr.appendChild(pl); frag.appendChild(tr);
+    tr.appendChild(pl);
+    const ri = document.createElement('input'); ri.type = 'number'; ri.className = 'rr'; ri.min = 1; ri.max = 9; ri.step = 1; ri.value = r.rep || 1; ri.dataset.i = i; ri.setAttribute('aria-label', t('row.rep', { n: r.n }));
+    tr.appendChild(td('rr', ri)); frag.appendChild(tr);
   });
   tb.appendChild(frag); updateCount(); updateGo(); paintDiag();
 }
-$('rows').addEventListener('change', e => { const cb = e.target.closest('input[type=checkbox]'); if (!cb) return; const i = +cb.dataset.i; cb.checked ? S.sel.add(i) : S.sel.delete(i); cb.closest('tr').classList.toggle('off', !cb.checked); updateCount(); updateGo(); estimate(); });
+$('rows').addEventListener('input', e => {
+  const ri = e.target.closest('input.rr'); if (!ri) return;
+  const v = Math.min(9, Math.max(1, parseInt(ri.value) || 1)); S.rows[+ri.dataset.i].rep = v; estimate();
+});
+$('rows').addEventListener('change', e => {
+  const ri = e.target.closest('input.rr'); if (ri) { ri.value = S.rows[+ri.dataset.i].rep; return; }   // normalize what is shown
+ const cb = e.target.closest('input[type=checkbox]'); if (!cb) return; const i = +cb.dataset.i; cb.checked ? S.sel.add(i) : S.sel.delete(i); cb.closest('tr').classList.toggle('off', !cb.checked); updateCount(); updateGo(); estimate(); });
 $('rows').addEventListener('click', e => { const b = e.target.closest('.play'); if (!b || b.disabled) return; if (textMode()) { speakOne(S.rows[+b.dataset.i].t[+b.dataset.k], +b.dataset.k); return; } const p = S.pairs[+b.dataset.i]; if (p) playClip(p[+b.dataset.k].a, p[+b.dataset.k].b); });
 const setSel = f => { S.sel = new Set(S.rows.map((r, i) => i).filter(i => f(S.rows[i]))); renderRows(); estimate(); };
 $('selHl').onclick = () => setSel(r => r.hl); $('selAll').onclick = () => setSel(() => true); $('selNone').onclick = () => setSel(() => false);

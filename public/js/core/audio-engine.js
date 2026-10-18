@@ -171,17 +171,21 @@ const Core = (() => {
       return chans.map(c => { const s = c.slice(i0, i1); const f = Math.min(fade, s.length >> 1);
         for (let i = 0; i < f; i++) { const g = i / f; s[i] *= g; s[s.length - 1 - i] *= g; } return s; });
     };
+    // item = [clip of language 1, clip of language 2, rowReps]; the whole row (both languages) plays rowReps times
     items.forEach((it, k) => {
-      const order = cfg.order === 'ba' ? [1, 0] : [0, 1];
-      order.forEach((li, oi) => {
-        const reps = cfg.reps[li];
-        for (let r = 0; r < reps; r++) {
-          push(clip(it[li]));
-          const lastRep = r === reps - 1;
-          if (!lastRep) silence(cfg.gapRep);
-        }
-        if (reps > 0 && oi === 0 && cfg.reps[order[1]] > 0) silence(cfg.gapLang);
-      });
+      const order = cfg.order === 'ba' ? [1, 0] : [0, 1], rowReps = Math.max(1, it[2] || 1);
+      for (let q = 0; q < rowReps; q++) {
+        order.forEach((li, oi) => {
+          const reps = cfg.reps[li];
+          for (let r = 0; r < reps; r++) {
+            push(clip(it[li]));
+            const lastRep = r === reps - 1;
+            if (!lastRep) silence(cfg.gapRep);
+          }
+          if (reps > 0 && oi === 0 && cfg.reps[order[1]] > 0) silence(cfg.gapLang);
+        });
+        if (q < rowReps - 1) silence(cfg.gapPhrase);   // pause between repetitions of the same row
+      }
       if (k < items.length - 1) silence(cfg.gapPhrase);
     });
     const out = chans.map(() => new Float32Array(total)); let o = 0;

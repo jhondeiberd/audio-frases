@@ -9,6 +9,7 @@ async function handlePdf(file) {
     const rows = []; let hdr = null;
     for (let p = 1; p <= pdf.numPages; p++) { const r = await parsePage(await pdf.getPage(p)); rows.push(...r.rows); hdr = hdr || r.hdr; }
     if (!rows.length) throw new Error(t('err.pdf.none'));
+    rows.forEach(r => r.rep = rowRepDefault());
     S.rows = rows; S.pdfName = file.name; S.pdfBase = file.name.replace(/\.[^.]+$/, '') || 'frases';
     if (hdr) [0, 1].forEach(k => { if (hdr[k]) { $('name' + k).value = hdr[k]; store.set('name' + k, hdr[k]); autoLang(k); } });
     paintCfg();

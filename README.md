@@ -53,6 +53,7 @@ vercel dev
   (comma-separated list) in the Vercel project.
 - The Microsoft voice uses an unofficial service: it may stop working if Microsoft changes its protocol.
 - The ElevenLabs key is stored only in the browser of whoever types it.
+- Row repetitions: a global default (1) in the languages section sets every row; the last table column lets you change single rows. The whole row (both languages, with their own per-language repetitions) plays that many times before the next row.
 - Interface language (ES/EN) and light/dark theme: header buttons. Texts live in `public/js/app/i18n.js`
   (same keys in `es` and `en`); in HTML use `data-i18n="key"`. Code and comments are always in English.
 

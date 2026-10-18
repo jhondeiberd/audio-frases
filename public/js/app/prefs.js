@@ -5,6 +5,13 @@ function readCfg() {
   const n = id => Math.max(0, parseFloat($(id).value) || 0);
   return { reps: cfg.reps.slice(), order: $('order').value, gapLang: n('gapLang'), gapRep: n('gapRep'), gapPhrase: n('gapPhrase'), padBefore: 0.15, padAfter: 0.35 };
 }
+// Default "row repetitions": changing it applies the value to every row of the loaded list
+const rowRepDefault = () => Math.min(9, Math.max(1, parseInt($('rowRep').value) || 1));
+{ const v = store.get('rowRep', ''); if (v) $('rowRep').value = v; }
+$('rowRep').addEventListener('input', () => {
+  const v = rowRepDefault(); store.set('rowRep', v);
+  S.rows.forEach(r => r.rep = v); renderRows(); estimate();
+});
 function paintCfg() {
   $('reps0').textContent = cfg.reps[0]; $('reps1').textContent = cfg.reps[1];
   $('th0').textContent = $('name0').value || t('lang.1c'); $('th1').textContent = $('name1').value || t('lang.2c');

@@ -64,7 +64,7 @@ async function buildFromEleven(c, prog) {
   rows.forEach(r => [0, 1].forEach(l => { if (c.reps[l] > 0) place(keyOf(l, r)); }));
   parts.push(gap);
   const line = new Float32Array(parts.reduce((s, a) => s + a.length, 0)); let o = 0; parts.forEach(a => { line.set(a, o); o += a.length; });
-  const items = rows.map(r => [0, 1].map(l => c.reps[l] > 0 ? range.get(keyOf(l, r)) : [0, 0.01]));
+  const items = rows.map(r => [...[0, 1].map(l => c.reps[l] > 0 ? range.get(keyOf(l, r)) : [0, 0.01]), r.rep || 1]);
   setStatus(t('st.assemble')); await tick();
   return { out: Core.assemble([line], sr, items, { ...c, padBefore: 0, padAfter: 0, gapRep: Math.max(0.2, c.gapRep - 0.12), gapLang: Math.max(0.2, c.gapLang - 0.12), gapPhrase: Math.max(0.2, c.gapPhrase - 0.12) }), sr };
 }

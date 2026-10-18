@@ -45,14 +45,17 @@ async function speakAll() {
   const c = readCfg(), order = c.order === 'ba' ? [1, 0] : [0, 1], idx = [...S.sel].sort((a, b) => a - b), nm = l => $('name' + l).value || t('lang.' + (l + 1) + 'c');
   try {
     for (let n = 0; n < idx.length && !stopFlag; n++) {
-      const r = S.rows[idx[n]];
-      for (let oi = 0; oi < 2 && !stopFlag; oi++) {
-        const l = order[oi];
-        for (let rep = 0; rep < c.reps[l] && !stopFlag; rep++) {
-          setStatus(t('say.progress', { i: n + 1, n: idx.length, l: nm(l), r: rep + 1, R: c.reps[l] }));
-          await say(r.t[l], l); if (!stopFlag && rep < c.reps[l] - 1) await wait(c.gapRep);
+      const r = S.rows[idx[n]], rowReps = Math.max(1, r.rep || 1);
+      for (let q = 0; q < rowReps && !stopFlag; q++) {   // the whole row repeats rowReps times
+        for (let oi = 0; oi < 2 && !stopFlag; oi++) {
+          const l = order[oi];
+          for (let rep = 0; rep < c.reps[l] && !stopFlag; rep++) {
+            setStatus(t('say.progress', { i: n + 1, n: idx.length, l: nm(l), r: rep + 1, R: c.reps[l] }));
+            await say(r.t[l], l); if (!stopFlag && rep < c.reps[l] - 1) await wait(c.gapRep);
+          }
+          if (oi === 0 && c.reps[l] > 0 && c.reps[order[1]] > 0 && !stopFlag) await wait(c.gapLang);
         }
-        if (oi === 0 && c.reps[l] > 0 && c.reps[order[1]] > 0 && !stopFlag) await wait(c.gapLang);
+        if (q < rowReps - 1 && !stopFlag) await wait(c.gapPhrase);
       }
       if (n < idx.length - 1 && !stopFlag) await wait(c.gapPhrase);
     }

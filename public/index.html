@@ -63,8 +63,10 @@
       <label class="f"><span data-i18n="f.gapLang">Pause between languages (s)</span><input type="number" id="gapLang" value="1.5" min="0" max="10" step="0.1"></label>
       <label class="f"><span data-i18n="f.gapRep">Pause between repetitions (s)</span><input type="number" id="gapRep" value="1.5" min="0" max="10" step="0.1"></label>
       <label class="f"><span data-i18n="f.gapPhrase">Pause between phrases (s)</span><input type="number" id="gapPhrase" value="2" min="0" max="15" step="0.1"></label>
+      <label class="f"><span data-i18n="f.rowRep">Row repetitions</span><input type="number" id="rowRep" value="1" min="1" max="9" step="1" aria-describedby="rowRepHint"></label>
     </div>
     <div class="hint" data-i18n="langs.hint">With the original audio, language 1 is the one that plays first. A language set to 0 repetitions is left out of the new audio.</div>
+    <div class="hint" id="rowRepHint" data-i18n="rowrep.hint">Row repetitions plays each whole row (both languages) that many times before moving on. Changing it here sets every row; you can then adjust single rows in the last column of the table.</div>
   </section>
 
   <section aria-labelledby="h3">
@@ -79,8 +81,8 @@
     <div class="hint" id="skipHint" data-i18n="skip.hint">If the audio starts with a title (for example “List 2”) before the first phrase, that part is skipped. The page detects it on its own; change the number only if the phrases you hear with ▶ do not match their row.</div>
     <div class="tablewrap">
       <table>
-        <thead><tr><th></th><th>#</th><th id="th0">Spanish</th><th id="th1">English</th><th data-i18n="th.listen">Listen</th></tr></thead>
-        <tbody id="rows"><tr><td colspan="5" class="empty">The phrases from the PDF will appear here, with the highlighted ones marked.</td></tr></tbody>
+        <thead><tr><th></th><th>#</th><th id="th0">Spanish</th><th id="th1">English</th><th data-i18n="th.listen">Listen</th><th data-i18n="th.rowrep" data-i18n-title="th.rowrep.tip" title="Times the whole row is repeated">Row ×</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="6" class="empty">The phrases from the PDF will appear here, with the highlighted ones marked.</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -95,7 +97,7 @@
         <label class="f"><span data-i18n="el.model">Model</span><select id="elModel"><option value="eleven_multilingual_v2" data-i18n="el.m1">Multilingual v2 (best quality)</option><option value="eleven_flash_v2_5" data-i18n="el.m2">Flash v2.5 (faster and cheaper)</option></select></label>
         <div class="bar span"><button class="btn sm" type="button" id="elLoad" data-i18n="el.load">Load my voices</button><button class="btn sm" type="button" id="elForget" data-i18n="el.forget">Forget the key</button><span class="hint" id="elMsg"></span></div>
         <label class="f"><span id="elL0">Voice for language 1</span><select id="elS0"></select><input type="text" id="elV0" data-i18n-ph="el.idPh" placeholder="or paste a voice ID" autocomplete="off"></label>
-        <label class="f"><span id="elL1">Voice for language 2</span><select id="elS1"></select><input type="text" id="elV1" placeholder="o pega un ID de voz" autocomplete="off"></label>
+        <label class="f"><span id="elL1">Voice for language 2</span><select id="elS1"></select><input type="text" id="elV1" data-i18n-ph="el.idPh" placeholder="or paste a voice ID" autocomplete="off"></label>
         <div class="hint span" data-i18n="el.hint">The key and voices are stored only in this browser and are sent only to ElevenLabs. Each phrase uses characters from your plan; repetitions cost nothing extra because each phrase is requested only once.</div>
       </div>
       <div id="msBlock" class="vgrid" hidden>
