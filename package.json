@@ -1,13 +1,13 @@
 {
   "name": "audio-frases",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "private": true,
   "description": "Phrase Audio: trim, repeat and build audio from a PDF phrase list",
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
-    "msedge-tts": "2.1.0"
+    "msedge-tts": "2.1.1"
   },
   "scripts": {
     "dev": "vercel dev",

@@ -112,3 +112,6 @@ td.rr{width:1%;white-space:nowrap}
 td.rr input{width:64px;text-align:center;padding:4px 6px}
 a.btn{display:inline-block;text-decoration:none}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.fields .f{justify-content:space-between}
+.fields.three{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}

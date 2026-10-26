@@ -58,12 +58,22 @@
           <div class="stepper" data-lang="1"><button type="button" data-d="-1" data-i18n-aria="reps.less2" aria-label="Fewer repetitions of language 2">−</button><output id="reps1">3</output><button type="button" data-d="1" data-i18n-aria="reps.more2" aria-label="More repetitions of language 2">+</button></div></div>
       </div>
     </div>
-    <div class="grid4">
-      <label class="f"><span data-i18n="f.order">Order within each phrase</span><select id="order"><option value="ab" data-i18n="order.ab">Language 1, then 2</option><option value="ba" data-i18n="order.ba">Language 2, then 1</option></select></label>
-      <label class="f"><span data-i18n="f.gapLang">Pause between languages (s)</span><input type="number" id="gapLang" value="1.5" min="0" max="10" step="0.1"></label>
-      <label class="f"><span data-i18n="f.gapRep">Pause between repetitions (s)</span><input type="number" id="gapRep" value="1.5" min="0" max="10" step="0.1"></label>
-      <label class="f"><span data-i18n="f.gapPhrase">Pause between phrases (s)</span><input type="number" id="gapPhrase" value="2" min="0" max="15" step="0.1"></label>
-      <label class="f"><span data-i18n="f.rowRep">Row repetitions</span><input type="number" id="rowRep" value="1" min="1" max="9" step="1" aria-describedby="rowRepHint"></label>
+    <div class="row">
+      <div class="lang">
+        <span class="cap" data-i18n="opt.play">Playback</span>
+        <div class="fields">
+          <label class="f"><span data-i18n="f.order">Order within each phrase</span><select id="order"><option value="ab" data-i18n="order.ab">Language 1, then 2</option><option value="ba" data-i18n="order.ba">Language 2, then 1</option></select></label>
+          <label class="f"><span data-i18n="f.rowRep">Row repetitions</span><input type="number" id="rowRep" value="1" min="1" max="9" step="1" aria-describedby="rowRepHint"></label>
+        </div>
+      </div>
+      <div class="lang">
+        <span class="cap" data-i18n="opt.pauses">Pauses (seconds)</span>
+        <div class="fields three">
+          <label class="f"><span data-i18n="f.gapLang">Between languages</span><input type="number" id="gapLang" value="1.5" min="0" max="10" step="0.1"></label>
+          <label class="f"><span data-i18n="f.gapRep">Between repetitions</span><input type="number" id="gapRep" value="1.5" min="0" max="10" step="0.1"></label>
+          <label class="f"><span data-i18n="f.gapPhrase">Between phrases</span><input type="number" id="gapPhrase" value="2" min="0" max="15" step="0.1"></label>
+        </div>
+      </div>
     </div>
     <div class="hint" data-i18n="langs.hint">With the original audio, language 1 is the one that plays first. A language set to 0 repetitions is left out of the new audio.</div>
     <div class="hint" id="rowRepHint" data-i18n="rowrep.hint">Row repetitions plays each whole row (both languages) that many times before moving on. Changing it here sets every row; you can then adjust single rows in the last column of the table.</div>

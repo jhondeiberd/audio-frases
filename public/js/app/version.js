@@ -1,2 +1,2 @@
 // Application version. Single source: updated by `npm run release -- 1.2.0 "reason"`.
-const APP_VERSION = { version: '1.3.1', date: '2026-10-18', notes: 'v1.3.1 Fix PDF rows with merged columns; empty-text warning; back-to-top link' };
+const APP_VERSION = { version: '1.3.2', date: '2026-10-26', notes: 'Update msedge-tts to 2.1.1 (Microsoft changed its voice endpoint)' };
