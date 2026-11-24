@@ -126,7 +126,17 @@
     <progress id="prog" max="100" value="0" hidden></progress>
     <div class="result" id="result" hidden>
       <div class="player"><button class="btn sm" type="button" id="pp" data-i18n-aria="player.pp" aria-label="Play or pause">▶</button><input type="range" id="seek" min="0" max="1000" value="0" data-i18n-aria="player.seek" aria-label="Position"><output id="time">0:00 / 0:00</output></div>
-      <div class="bar"><button class="btn" type="button" id="save" data-i18n="save">Download MP3</button><span class="hint" id="saveHint"></span><a class="btn" href="#top" id="toTop" data-i18n="toTop">↑ Back to top</a></div>
+      <div class="bar"><button class="btn" type="button" id="save" data-i18n="save">Download MP3</button><button class="btn" type="button" id="saveVideo" data-i18n="vid.btn" disabled>Download video (MP4)</button><span class="hint" id="saveHint"></span><a class="btn" href="#top" id="toTop" data-i18n="toTop">↑ Back to top</a></div>
+      <details class="vidopts" id="vidOpts">
+        <summary data-i18n="vid.opts">Karaoke video options</summary>
+        <div class="fields">
+          <label class="f"><span data-i18n="vid.orient">Format</span><select id="vidOrient"><option value="land" data-i18n="vid.land">Horizontal 16:9</option><option value="port" data-i18n="vid.port">Vertical 9:16</option></select></label>
+          <label class="f"><span data-i18n="vid.hide">Reveal while it is spoken</span><select id="vidHide"></select></label>
+        </div>
+        <div class="hint" data-i18n="vid.note">The video has the same audio, with the phrases written like a karaoke. It is created in your browser: long lists can take a few minutes, so keep this tab open.</div>
+      </details>
+      <div class="bar" id="vidRun" hidden><progress id="vprog" max="100" value="0"></progress><button class="btn sm" type="button" id="vidCancel" data-i18n="vid.cancel">Cancel</button></div>
+      <span class="hint" id="vidHint"></span>
     </div>
   </section>
 </div>
@@ -153,6 +163,8 @@
 <script src="js/app/voice-elevenlabs.js"></script>
 <script src="js/app/player.js"></script>
 <script src="js/app/save.js"></script>
+<script src="vendor/mp4-muxer.js"></script>
+<script src="js/app/video.js"></script>
 <script src="js/app/voice-microsoft.js"></script>
 <script src="js/app/version.js"></script>
 <script src="js/app/bootstrap.js"></script>

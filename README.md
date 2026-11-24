@@ -17,6 +17,7 @@ public/                    what the browser receives
   index.html               page structure
   favicon.svg / .png       icon
   css/styles.css           styles
+  vendor/mp4-muxer.js      MP4 muxer 5.2.2 (MIT), see mp4-muxer.NOTICE.txt
   js/core/audio-engine.js  domain: segmentation, voices, pairing, MP3/ZIP (no DOM)
   js/app/                  UI and flow (load order in index.html)
     config.js              ELEVEN = true/false
@@ -28,6 +29,7 @@ public/                    what the browser receives
     dropzones.js           file loading
     pdf-parser.js          PDF reading
     audio-loader.js        audio decoding
+    video.js               karaoke MP4 export (canvas + WebCodecs + mp4-muxer)
     phrase-table.js        phrase table
     generator.js           audio generation
     voice-browser.js       voice panels and browser voice
@@ -54,6 +56,7 @@ vercel dev
 - The Microsoft voice uses an unofficial service: it may stop working if Microsoft changes its protocol.
 - The ElevenLabs key is stored only in the browser of whoever types it.
 - Row repetitions: a global default (1) in the languages section sets every row; the last table column lets you change single rows. The whole row (both languages, with their own per-language repetitions) plays that many times before the next row.
+- Karaoke MP4 (button next to the MP3 download): same audio plus the phrases drawn on an animated background, 16:9 or 9:16. The second language can be hidden until it is spoken (first repetition). Needs WebCodecs (Chrome, Edge, Brave; https or localhost); H.264 + AAC, falling back to Opus/VP9 when AAC is unavailable. Rendering runs in the browser, no server cost.
 - Interface language (ES/EN) and light/dark theme: header buttons. Texts live in `public/js/app/i18n.js`
   (same keys in `es` and `en`); in HTML use `data-i18n="key"`. Code and comments are always in English.
 

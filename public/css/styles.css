@@ -115,3 +115,7 @@ a.btn{display:inline-block;text-decoration:none}
 .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .fields .f{justify-content:space-between}
 .fields.three{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}
+.vidopts{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.vidopts summary{cursor:pointer;font-size:.88rem;color:var(--muted)}
+.vidopts[open] summary{margin-bottom:6px}
+#vidRun progress{flex:1;min-width:140px}

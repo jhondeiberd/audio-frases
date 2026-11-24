@@ -15,7 +15,7 @@ $('rowRep').addEventListener('input', () => {
 function paintCfg() {
   $('reps0').textContent = cfg.reps[0]; $('reps1').textContent = cfg.reps[1];
   $('th0').textContent = $('name0').value || t('lang.1c'); $('th1').textContent = $('name1').value || t('lang.2c');
-  estimate();
+  estimate(); if (typeof fillVidHide === 'function') fillVidHide();
 }
 ['name0', 'name1'].forEach(id => { const v = store.get(id, ''); if (v) $(id).value = v; $(id).addEventListener('input', () => { store.set(id, $(id).value); paintCfg(); }); });
 ['order', 'gapLang', 'gapRep', 'gapPhrase'].forEach(id => { const v = store.get(id, ''); if (v) $(id).value = v; $(id).addEventListener('input', () => { store.set(id, $(id).value); estimate(); }); });

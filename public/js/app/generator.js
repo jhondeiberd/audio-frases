@@ -1,5 +1,5 @@
 // ---- generate ----
-function selectedItems() { return [...S.sel].sort((a, b) => a - b).filter(i => S.pairs[i]).map(i => { const p = S.pairs[i]; return [[p[0].a, p[0].b], [p[1].a, p[1].b], S.rows[i].rep || 1]; }); }
+function selectedItems() { return [...S.sel].sort((a, b) => a - b).filter(i => S.pairs[i]).map(i => { const p = S.pairs[i]; return [[p[0].a, p[0].b], [p[1].a, p[1].b], S.rows[i].rep || 1, S.rows[i]]; }); }
 function estimate() {
   updatePanels(); updateGo(); paintCfgLabelsOnly();
   if (textMode()) {
@@ -29,7 +29,7 @@ $('go').addEventListener('click', async () => {
     const c = readCfg(); let out, sr;
     if (!textMode()) { setStatus(t('st.assemble')); await tick(); out = Core.assemble(S.chans, S.sr, selectedItems(), c); sr = S.sr; }
     else ({ out, sr } = await buildFromEleven(c, prog));
-    S.out = out; prog.value = Math.max(prog.value, 15);
+    S.out = out; S.timeline = out.timeline || []; prog.value = Math.max(prog.value, 15);
     const nch = out.length, len = out[0].length, enc = window.lamejs ? new lamejs.Mp3Encoder(nch, sr, 128) : null, parts = [];
     const toI16 = (f, a, b) => { const r = new Int16Array(b - a); for (let i = a; i < b; i++) { const v = Math.max(-1, Math.min(1, f[i])); r[i - a] = v < 0 ? v * 32768 : v * 32767; } return r; };
     let ext = 'mp3', bytes;
@@ -54,7 +54,7 @@ $('go').addEventListener('click', async () => {
     S.fileName = ((textMode() ? S.pdfBase : S.base) + '_selected').replace(/[^\w\-.\u00C0-\u024F]+/g, '_'); S.ext = ext; S.audioBlob = bytes;
     S.outBuf = getCtx().createBuffer(nch, len, sr); out.forEach((ch, i) => S.outBuf.copyToChannel(ch, i));
     prog.value = 100; await tick();
-    $('result').hidden = false; $('seek').value = 0; paintTime(0);
+    $('result').hidden = false; $('seek').value = 0; paintTime(0); if (typeof videoReady === 'function') videoReady();
     $('saveHint').textContent = t('save.willname', { f: S.fileName + '.' + ext });
     setStatus(t('st.done', { n: S.sel.size, d: fmt(len / sr) })); prog.hidden = true;
   } catch (e) { console.error(e); setStatus(t('err.create', { e: e instanceof TypeError && textMode() ? t('err.elconn') : (e.message || e) }), true); prog.hidden = true; }
